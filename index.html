@@ -486,8 +486,13 @@ function mkTag(text,color){
 /* ── SHIELD DROP MESH ── */
 function mkShieldDropMesh(){
   const g=new THREE.Group();
-  const s=new THREE.Mesh(GEO.shBody,MAT.shield);s.position.y=.35;g.add(s);
-  const bo=new THREE.Mesh(GEO.shBoss,MAT.shBoss);bo.position.y=.35;g.add(bo);
+  // anonymous corpse lying on ground (no name shown)
+  const corpse=new THREE.Mesh(new THREE.BoxGeometry(.48,.12,1.1),new THREE.MeshLambertMaterial({color:0xcc3333}));corpse.position.y=.06;g.add(corpse);
+  const chead=new THREE.Mesh(new THREE.BoxGeometry(.36,.12,.36),new THREE.MeshLambertMaterial({color:0xf0c080}));chead.position.set(0,.06,.55);g.add(chead);
+  const blood=new THREE.Mesh(GEO.blood,MAT.blood);blood.position.y=.01;g.add(blood);
+  // shield lying on top of corpse
+  const s=new THREE.Mesh(GEO.shBody,MAT.shield);s.position.set(0,.22,0);s.rotation.x=Math.PI/2;g.add(s);
+  const bo=new THREE.Mesh(GEO.shBoss,MAT.shBoss);bo.position.set(0,.23,0);g.add(bo);
   scene.add(g);return g;
 }
 
@@ -612,7 +617,7 @@ window.useItem=async function(){
       }
     }
   } else {
-    if(G.myRole==='murderer')return; // murderer can't pick up
+    if(G.myRole==='murderer'){notif('❌ Du kannst das Schild nicht nehmen!',1200);return;}
     if(shieldDropMesh&&!G.hasShield){
       const dx=PP.x-shieldDropPos.x,dz=PP.z-shieldDropPos.z;
       if(Math.sqrt(dx*dx+dz*dz)<2.5){
@@ -624,7 +629,7 @@ window.useItem=async function(){
         document.getElementById('safepill').style.display='block';
         setupRoleHUD();
         selSlot(1); // auto equip sword
-      } else notif('Näher!',800);
+      } else notif('Näher herangehen!',800);
     }
   }
 };
@@ -849,7 +854,7 @@ function gameLoop(){
   }
 
   // SHIELD DROP BOB
-  if(shieldDropMesh){shieldDropMesh.position.y=.4+Math.sin(t*2)*.08;shieldDropMesh.rotation.y+=dt*1.5;}
+  if(shieldDropMesh){shieldDropMesh.rotation.y+=dt*0.3;}
 
   tickOthers(dt);
   renderer.render(scene,camera);
@@ -873,10 +878,11 @@ function tickOthers(dt){
 
 // exposed callbacks
 window.killOther=name=>{const ot=others[name];if(ot)killChar(ot);};
-window.updateOtherPos=(name,x,z,ry)=>{
+window.updateOtherPos=(name,x,y,z,ry)=>{
   const ot=others[name];if(!ot)return;
   ot.g.position.x=x;
   ot.g.position.z=z;
+  if(y!==undefined)ot.g.position.y=y-1.7;
   if(ry!==undefined){
     let diff=ry-(ot.g.rotation.y||0);
     while(diff>Math.PI)diff-=Math.PI*2;
@@ -1083,7 +1089,7 @@ function enterWorld(l){
       if(!G.running){clearInterval(posIv);return;}
       if(G.myIdx<0)return;
       await updL(G.code,{
-        [`players/${G.myIdx}/pos`]:{x:Math.round(PP.x*10)/10,z:Math.round(PP.z*10)/10},
+        [`players/${G.myIdx}/pos`]:{x:Math.round(PP.x*10)/10,y:Math.round(PP.y*10)/10,z:Math.round(PP.z*10)/10},
         [`players/${G.myIdx}/ry`]:+G.yaw.toFixed(3)
       });
     },100);
@@ -1106,7 +1112,7 @@ function enterWorld(l){
       if(!ll||!G.running)return;
       ll.players.forEach(p=>{
         if(p.name===G.name){if(p.elim&&G.alive){G.alive=false;window.onSelfKilled('Du wurdest ermordet.');} return;}
-        if(p.pos)window.updateOtherPos(p.name,p.pos.x,p.pos.z,p.ry);
+        if(p.pos)window.updateOtherPos(p.name,p.pos.x,p.pos.y,p.pos.z,p.ry);
         if(p.elim)window.killOther(p.name);
         if(p.isSheriff){window.updateOtherTag(p.name,'sheriff');if(window._roles)window._roles[p.name]='sheriff';}
         if(p.knifeOut===1)window.updateOtherTag(p.name,'knife');
