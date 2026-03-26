@@ -489,6 +489,7 @@ function startShieldTimer(){
         notif('⚠️ Schild fliegt runter!',2000);
         fbDropShield(PP.x,PP.z);
         G.shDropped=true;
+        G.dropInvincible=true;setTimeout(()=>{G.dropInvincible=false;},2000);
         document.getElementById('gslot2').classList.add('off');
         document.getElementById('gslot1').classList.remove('off');
         G.curSlot=0;document.querySelectorAll('.ghs').forEach((s,idx)=>s.classList.toggle('on',idx===0));
@@ -521,6 +522,8 @@ async function useItem(){
       if(G.curSlot!==2){notif('Slot 3 wählen (🛡️) um Schild zu droppen!',1500);return;}
       fbDropShield(PP.x,PP.z);
       G.shDropped=true;
+      G.dropInvincible=true;
+      setTimeout(()=>{G.dropInvincible=false;},2000);
       clearInterval(shieldTimerInterval);
       document.getElementById('gshieldtimer').style.display='none';
       document.getElementById('gslot2').classList.add('off');
@@ -733,7 +736,12 @@ function tickOthers(dt){
     const tgt=dist<8&&!isMoving?Math.min(1,(8-dist)/3):0;
     if(ot.label)ot.label.material.opacity+=(tgt-ot.label.material.opacity)*.15;
     const sheriffTgt=ot.hasSheriff&&ot.alive&&dist<15?1:0;
-    if(ot.tag)ot.tag.material.opacity+=(sheriffTgt-ot.tag.material.opacity)*.15;
+    if(ot.tag){
+      ot.tag.material.opacity+=(sheriffTgt-ot.tag.material.opacity)*.15;
+      // Scale tag down with distance: full size at 3m, tiny at 15m
+      const scaleFactor=ot.hasSheriff&&ot.alive?Math.max(0.2,Math.min(1,(15-dist)/12)):1;
+      ot.tag.scale.set(1.6*scaleFactor,.4*scaleFactor,1);
+    }
   });
 }
 
@@ -741,6 +749,10 @@ function tickOthers(dt){
 async function fbKillMurderer(name){
   const l=await getL(G.code);if(!l)return;
   const ti=l.players.findIndex(p=>p.name===name);if(ti<0)return;
+  const target=l.players[ti];
+  if(target&&target.dropTime&&(Date.now()-target.dropTime)<2000){
+    notif('🛡️ Unverwundbar! Kurz nach dem Droppen.',1500);return;
+  }
   await updL(G.code,{[`players/${ti}/elim`]:1,phase:'ended',winner:'innocents'});
 }
 async function fbKill(name){
@@ -760,7 +772,7 @@ async function fbSetKnife(val){
 }
 async function fbDropShield(x,z){
   await updL(G.code,{shield:{dropped:true,x,z}});
-  if(G.myIdx>=0)await updL(G.code,{[`players/${G.myIdx}/shieldDropped`]:1});
+  if(G.myIdx>=0)await updL(G.code,{[`players/${G.myIdx}/shieldDropped`]:1,[`players/${G.myIdx}/dropTime`]:Date.now()});
 }
 async function fbPickShield(){
   await updL(G.code,{shield:{dropped:false,x:0,z:0}});
