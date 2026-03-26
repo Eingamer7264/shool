@@ -1,40 +1,14 @@
-import { useEffect } from "react";
-
-export default function Game() {
-  useEffect(() => {
-    // Inject Three.js script
-    const threeScript = document.createElement('script');
-    threeScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-    threeScript.onload = () => {
-      // Three.js loaded, inject Firebase + game
-      const fbScript = document.createElement('script');
-      fbScript.type = 'module';
-      fbScript.textContent = getGameScript();
-      document.body.appendChild(fbScript);
-    };
-    document.head.appendChild(threeScript);
-
-    return () => {
-      // cleanup
-      if (window._gameCleanup) window._gameCleanup();
-    };
-  }, []);
-
-  return (
-    <div
-      id="game-root"
-      dangerouslySetInnerHTML={{ __html: getGameHTML() }}
-      style={{ position: 'fixed', inset: 0, zIndex: 9999 }}
-    />
-  );
-}
-
-function getGameHTML() {
-  return `
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Murder Mystery 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap');
-#game-root *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-#game-root{width:100%;height:100%;overflow:hidden;background:#07050a;color:var(--gtext);font-family:'Crimson Pro',serif;touch-action:none;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;background:#07050a;color:var(--gtext);font-family:'Crimson Pro',serif;touch-action:none;}
 :root{--blood:#8b0000;--gold:#c9a84c;--gcard:#13100d;--gborder:#2a2218;--gtext:#d4c9a8;--gmuted:#7a6e58;}
 #c3d{position:fixed;top:0;left:0;width:100%;height:100%;display:none;z-index:1;}
 .gscreen{display:none;position:fixed;inset:0;z-index:50;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;background:#07050a;}
@@ -42,8 +16,8 @@ function getGameHTML() {
 #gs-title{text-align:center;gap:1.8rem;}
 .gblade{font-size:2.8rem;display:inline-block;animation:gfl 3s ease-in-out infinite;}
 @keyframes gfl{0%,100%{transform:rotate(-15deg) translateY(0);}50%{transform:rotate(-15deg) translateY(-10px);}}
-#game-root h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(2.8rem,9vw,5.5rem);line-height:.95;letter-spacing:.04em;color:#fff;text-shadow:0 0 50px rgba(139,0,0,.5),0 3px 0 var(--blood);}
-#game-root h1 em{color:var(--blood);font-style:normal;}
+h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(2.8rem,9vw,5.5rem);line-height:.95;letter-spacing:.04em;color:#fff;text-shadow:0 0 50px rgba(139,0,0,.5),0 3px 0 var(--blood);}
+h1 em{color:var(--blood);font-style:normal;}
 .gtagline{font-style:italic;color:var(--gmuted);letter-spacing:.25em;text-transform:uppercase;font-size:1rem;}
 .gornament{color:var(--gmuted);letter-spacing:.4em;font-size:.8rem;}
 .gmenu{display:flex;flex-direction:column;gap:.9rem;width:100%;max-width:300px;}
@@ -51,11 +25,11 @@ function getGameHTML() {
 .gbtn-red{background:var(--blood);border-color:var(--blood);color:#fff;}
 .gpanel{background:var(--gcard);border:1px solid var(--gborder);padding:2.2rem;width:100%;max-width:400px;position:relative;}
 .gpanel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-#game-root h2{font-family:'Cinzel',serif;font-size:1.3rem;color:var(--gold);margin-bottom:1.4rem;letter-spacing:.1em;}
-#game-root label{display:block;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gmuted);margin-bottom:.45rem;}
-#game-root input[type=text]{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--gborder);color:var(--gtext);font-family:'Crimson Pro',serif;font-size:1.1rem;padding:.7rem .9rem;outline:none;}
-#game-root input[type=text]:focus{border-color:var(--gold);}
-#game-root input[type=text]::placeholder{color:var(--gmuted);}
+h2{font-family:'Cinzel',serif;font-size:1.3rem;color:var(--gold);margin-bottom:1.4rem;letter-spacing:.1em;}
+label{display:block;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gmuted);margin-bottom:.45rem;}
+input[type=text]{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--gborder);color:var(--gtext);font-family:'Crimson Pro',serif;font-size:1.1rem;padding:.7rem .9rem;outline:none;}
+input[type=text]:focus{border-color:var(--gold);}
+input[type=text]::placeholder{color:var(--gmuted);}
 .gfield{margin-bottom:1.1rem;}
 .glink-btn{background:none;border:none;color:var(--gmuted);cursor:pointer;font-family:'Crimson Pro',serif;font-style:italic;font-size:.95rem;margin-top:.8rem;}
 .gcodebox{background:rgba(139,0,0,.12);border:1px solid var(--blood);padding:1.2rem;text-align:center;margin:1.3rem 0;}
@@ -112,7 +86,6 @@ function getGameHTML() {
 #grolepill.innocent{border-color:#334488;color:#aabbff;}
 #grolepill.sheriff{border-color:var(--gold);color:var(--gold);}
 #gsafepill{position:absolute;top:50px;right:14px;padding:5px 14px;font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.1em;border-radius:2px;background:rgba(0,80,0,.5);border:1px solid #226622;color:#55ee55;display:none;}
-/* shield timer */
 #gshieldtimer{position:absolute;top:90px;right:14px;padding:5px 14px;font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.1em;border-radius:2px;background:rgba(139,0,0,.5);border:1px solid var(--blood);color:#ff6666;display:none;}
 #ghotbar{position:absolute;bottom:48px;left:50%;transform:translateX(-50%);display:flex;gap:6px;}
 .ghs{width:58px;height:58px;background:rgba(0,0,0,.85);border:2px solid #333;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:1.55rem;position:relative;pointer-events:all;cursor:pointer;}
@@ -120,7 +93,7 @@ function getGameHTML() {
 .ghs.off{display:none;}
 .ghk{position:absolute;top:3px;left:5px;font-size:.52rem;color:#555;font-family:'Cinzel',serif;}
 #gctrl{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.72);border:1px solid #1a1208;color:#4a3820;font-size:10px;letter-spacing:.09em;padding:5px 14px;font-family:'Cinzel',serif;white-space:nowrap;}
-#gescbtn{position:absolute;bottom:12px;right:14px;padding:8px 14px;background:rgba(0,0,0,.8);border:1px solid #333;color:#555;cursor:pointer;font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.1em;pointer-events:all;border-radius:2px;}
+#gescbtn{position:absolute;bottom:12px;right:14px;padding:8px 14px;background:rgba(0,0,0,.8);border:1px solid #333;color:#555;cursor:pointer;font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.1em;pointer-events:all;border-radius:2px;display:none;}
 #gjzone{position:absolute;bottom:80px;left:20px;width:110px;height:110px;pointer-events:all;display:none;}
 #gjbase{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.35);border:2px solid rgba(201,168,76,.25);}
 #gjknob{position:absolute;width:44px;height:44px;border-radius:50%;background:rgba(139,0,0,.6);border:2px solid rgba(201,168,76,.5);top:33px;left:33px;}
@@ -135,9 +108,11 @@ function getGameHTML() {
 #gnotif{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.92);border:1px solid var(--blood);color:#fff;padding:12px 32px;font-family:'Cinzel',serif;font-size:.95rem;letter-spacing:.1em;z-index:150;display:none;text-align:center;border-radius:2px;max-width:80vw;}
 #gkick-dialog{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;align-items:center;justify-content:center;}
 </style>
-
+</head>
+<body>
+ 
 <div class="gconn" id="gconn"><div class="gspinner"></div><div class="gconn-txt">VERBINDE…</div></div>
-
+ 
 <div id="gkick-dialog">
   <div style="background:var(--gcard);border:1px solid var(--gold);padding:2rem;text-align:center;max-width:280px;width:90%;">
     <div style="font-family:'Cinzel',serif;font-size:.95rem;color:var(--gold);margin-bottom:.8rem;">Spieler kicken?</div>
@@ -148,7 +123,7 @@ function getGameHTML() {
     </div>
   </div>
 </div>
-
+ 
 <div id="gs-title" class="gscreen">
   <span class="gblade">🗡️</span>
   <div><h1>MURDER<br><em>MYSTERY</em></h1><p class="gtagline">Ein Mörder unter Euch</p></div>
@@ -158,7 +133,7 @@ function getGameHTML() {
     <button class="gbtn" id="gbtn-join">🚪 Mit Code beitreten</button>
   </div>
 </div>
-
+ 
 <div id="gs-host" class="gscreen">
   <div class="gpanel">
     <h2>🔑 Spiel erstellen</h2>
@@ -168,7 +143,7 @@ function getGameHTML() {
     <button class="glink-btn" id="gbtn-back-host">← Zurück</button>
   </div>
 </div>
-
+ 
 <div id="gs-join" class="gscreen">
   <div class="gpanel">
     <h2>🚪 Beitreten</h2>
@@ -178,7 +153,7 @@ function getGameHTML() {
     <button class="glink-btn" id="gbtn-back-join">← Zurück</button>
   </div>
 </div>
-
+ 
 <div id="gs-lobby" class="gscreen">
   <div class="globby-wrap">
     <div class="globby-top"><h2>⚔️ Lobby</h2><span class="gpcount" id="ghcount">1 Spieler</span></div>
@@ -189,7 +164,7 @@ function getGameHTML() {
     <button class="glink-btn" id="gbtn-leave-host">← Verlassen</button>
   </div>
 </div>
-
+ 
 <div id="gs-join-lobby" class="gscreen">
   <div class="globby-wrap">
     <div class="globby-top"><h2>⏳ Lobby</h2><span class="gpcount" id="gjcount">—</span></div>
@@ -199,12 +174,12 @@ function getGameHTML() {
     <button class="glink-btn" id="gbtn-leave-join">← Verlassen</button>
   </div>
 </div>
-
+ 
 <div id="gs-countdown" class="gscreen">
   <div id="gcdn">10</div>
   <div id="gcdsub">Spiel beginnt…</div>
 </div>
-
+ 
 <div id="gs-role" class="gscreen">
   <div class="grc">
     <span class="gri" id="gr-icon">🗡️</span>
@@ -214,16 +189,16 @@ function getGameHTML() {
   <div class="grh">Nur du siehst das</div>
   <div class="grh2">Welt in <span id="gr-cd">3</span>s…</div>
 </div>
-
+ 
 <div class="goverlay hide" id="goverlay">
   <div class="gov-icon" id="gov-icon">⚰️</div>
   <div class="gov-title" id="gov-title">—</div>
   <div class="gov-sub" id="gov-sub">—</div>
   <button class="gbtn gbtn-red" id="gbtn-mainmenu">🏠 Hauptmenü</button>
 </div>
-
+ 
 <canvas id="c3d"></canvas>
-
+ 
 <div id="ghud">
   <div id="gxhair"></div>
   <div id="grolepill" class="innocent">—</div>
@@ -238,9 +213,9 @@ function getGameHTML() {
   <div id="glzone"></div>
   <button id="gusebtn">⚔️</button>
   <div id="gctrl">WASD · Leertaste Springen · 1/2/3 Item · Klick/E Benutzen</div>
-  <button id="gescbtn" style="display:none;">☰ Verlassen</button>
+  <button id="gescbtn">☰ Verlassen</button>
 </div>
-
+ 
 <div id="gdead">
   <h2>☠️ Tot</h2>
   <p id="gdeadmsg">Du wurdest ermordet.</p>
@@ -253,18 +228,29 @@ function getGameHTML() {
 <div id="gspecbar">Spectating: <span id="gspecname">—</span></div>
 <div id="gflash"></div>
 <div id="gnotif"></div>
-`;
-}
-
-function getGameScript() {
-  return `
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getDatabase,ref,set,get,onValue,update,remove}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
+ 
+<!-- THREE.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+ 
+<!-- FIREBASE (module) -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import{getDatabase,ref,get,set,update,remove,onValue,off}from"https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 const FB={apiKey:"AIzaSyAtLemnwT80X4DbEEVUQzOCezGcPFjxHzs",authDomain:"murdermysery-8bbe3.firebaseapp.com",databaseURL:"https://murdermysery-8bbe3-default-rtdb.firebaseio.com",projectId:"murdermysery-8bbe3",storageBucket:"murdermysery-8bbe3.firebasestorage.app",messagingSenderId:"74585023201",appId:"1:74585023201:web:c691c0919a1db66a52cda0"};
-const fbApp=initializeApp(FB);
-const db=getDatabase(fbApp);
-
+const app=initializeApp(FB);
+const db=getDatabase(app);
+window._fbdb=db;window._fbref=ref;window._fbget=get;window._fbset=set;window._fbupdate=update;window._fbremove=remove;window._fbonValue=onValue;window._fboff=off;
+window._fbReady=true;document.dispatchEvent(new Event('fbready'));
+</script>
+<script>
+const lRef=c=>window._fbref(window._fbdb,'mm3d3v2/'+c);
+const getL=c=>window._fbget(lRef(c)).then(s=>s.exists()?s.val():null);
+const saveL=(c,d)=>window._fbset(lRef(c),d);
+const updL=(c,d)=>window._fbupdate(lRef(c),d);
+const delL=c=>window._fbremove(lRef(c));
+let unsub=null;
+function watchL(code,cb){if(unsub)unsub();const r=lRef(code);window._fbonValue(r,s=>{if(s.exists())cb(s.val());});unsub=()=>window._fboff(r);}
+ 
 /* ═══════════════════════════════════════
    GLOBAL STATE
 ═══════════════════════════════════════ */
@@ -278,14 +264,14 @@ const G={
 };
 const KEYS={};
 const PP=new THREE.Vector3(2,1.7,2);
-
+ 
 /* ── util ── */
 const ggo=id=>{document.querySelectorAll('.gscreen').forEach(s=>s.classList.remove('active'));document.getElementById(id)?.classList.add('active');};
 const gtoast=m=>{const e=document.createElement('div');e.className='gtoast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3200);};
 const flashRed=()=>{const f=document.getElementById('gflash');f.style.display='block';setTimeout(()=>f.style.display='none',400);};
 const notif=(msg,dur)=>{const n=document.getElementById('gnotif');n.textContent=msg;n.style.display='block';clearTimeout(n._t);n._t=setTimeout(()=>n.style.display='none',dur||2000);};
 const showOv=(icon,title,sub)=>{document.getElementById('gov-icon').textContent=icon;document.getElementById('gov-title').textContent=title;document.getElementById('gov-sub').textContent=sub;document.getElementById('goverlay').classList.remove('hide');};
-
+ 
 /* ═══════════════════════════════════════
    THREE.JS
 ═══════════════════════════════════════ */
@@ -296,7 +282,7 @@ const WALLS=[];
 let shieldDropMesh=null,shieldDropPos={x:0,z:0};
 let loopStarted=false,walkT=0;
 const _mv=new THREE.Vector3(),_cd=new THREE.Vector3(),_cr=new THREE.Vector3();
-
+ 
 const GEO={
   body:new THREE.BoxGeometry(.48,.68,.24),head:new THREE.BoxGeometry(.36,.36,.36),
   eye:new THREE.BoxGeometry(.08,.06,.04),leg:new THREE.BoxGeometry(.2,.5,.2),
@@ -323,7 +309,7 @@ const MAT={
   hBk:lam(0x111111),
 };
 const SPAWNS=[[2,2],[9,6],[-9,-6],[13,-11],[-6,13],[18,1],[-16,8],[4,-20],[20,-5],[-20,5],[0,15],[0,-15],[12,12],[-12,-12],[15,-8],[-15,8]];
-
+ 
 function initThree(){
   if(renderer)return;
   const canvas=document.getElementById('c3d');
@@ -336,10 +322,10 @@ function initThree(){
   buildMap();setupInput();
   if(!loopStarted){loopStarted=true;gameLoop();}
 }
-
+ 
 function B(mat,w,h,d,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);scene.add(m);return m;}
 function C(mat,rt,rb,h,sg,x,y,z){const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,sg),mat);m.position.set(x,y,z);scene.add(m);return m;}
-
+ 
 function buildMap(){
   B(MAT.sand,500,.2,500,0,0,0);
   [[-30,-20],[25,15],[-10,35],[40,-30],[-45,10],[15,-45]].forEach(([x,z])=>B(MAT.sand2,16,.07,12,x,.05,z));
@@ -373,7 +359,7 @@ function buildMap(){
   scene.add(new THREE.AmbientLight(0xffe0a0,2.2));
   const sun=new THREE.DirectionalLight(0xfff0c0,1.3);sun.position.set(30,60,10);scene.add(sun);
 }
-
+ 
 function mkChar(idx){
   const g=new THREE.Group();
   const bodySkin=new THREE.MeshLambertMaterial({color:0xcc3333});
@@ -392,7 +378,7 @@ function mkChar(idx){
   scene.add(g);
   return{g,body,head,lL,lR,aL,aR,hand,sm:bodySkin};
 }
-
+ 
 function setHandItem(hand,type){
   while(hand.children.length)hand.remove(hand.children[0]);
   if(fpHand){while(fpHand.children.length)fpHand.remove(fpHand.children[0]);}
@@ -406,7 +392,7 @@ function setHandItem(hand,type){
     if(fpHand){const fs=new THREE.Mesh(new THREE.BoxGeometry(.7,.8,.1),MAT.shield);fpHand.add(fs);const fb=new THREE.Mesh(new THREE.SphereGeometry(.1,6,6),MAT.shBoss);fpHand.add(fb);}
   }
 }
-
+ 
 function mkLabel(name){
   const cv=document.createElement('canvas');cv.width=200;cv.height=48;
   const ctx=cv.getContext('2d');
@@ -416,7 +402,7 @@ function mkLabel(name){
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true,opacity:0}));
   sp.scale.set(2,.48,1);return sp;
 }
-
+ 
 function mkTag(text,color){
   const cv=document.createElement('canvas');cv.width=160;cv.height=40;
   const ctx=cv.getContext('2d');
@@ -426,8 +412,7 @@ function mkTag(text,color){
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true,opacity:0}));
   sp.scale.set(1.6,.4,1);return sp;
 }
-
-// withCorpse=true when sheriff dies (shield on dead body), false when murderer hides it (just shield on ground)
+ 
 function mkShieldDropMesh(withCorpse){
   const g=new THREE.Group();
   if(withCorpse){
@@ -435,12 +420,11 @@ function mkShieldDropMesh(withCorpse){
     const chead=new THREE.Mesh(new THREE.BoxGeometry(.36,.12,.36),new THREE.MeshLambertMaterial({color:0xf0c080}));chead.position.set(0,.06,.55);g.add(chead);
     const blood=new THREE.Mesh(GEO.blood,MAT.blood);blood.position.y=.01;g.add(blood);
   }
-  // Shield lying on ground, slightly bobbing
   const s=new THREE.Mesh(GEO.shBody,MAT.shield);s.position.set(0,.18,0);s.rotation.x=Math.PI/2;g.add(s);
   const bo=new THREE.Mesh(GEO.shBoss,MAT.shBoss);bo.position.set(0,.19,0);g.add(bo);
   scene.add(g);return g;
 }
-
+ 
 function killChar(ot){
   ot.alive=false;
   ['body','head','aL','aR','lL','lR'].forEach(k=>{if(ot[k])ot[k].visible=false;});
@@ -450,7 +434,7 @@ function killChar(ot){
   if(ot.label)ot.label.visible=false;if(ot.tag)ot.tag.visible=false;
   ot.hasSheriff=false;
 }
-
+ 
 function collide(p){
   p.x=Math.max(-95,Math.min(95,p.x));p.z=Math.max(-95,Math.min(95,p.z));
   for(const w of WALLS){
@@ -459,7 +443,7 @@ function collide(p){
     if(ox>0&&oz>0){if(ox<oz)p.x+=ox*Math.sign(dx||.001);else p.z+=oz*Math.sign(dz||.001);}
   }
 }
-
+ 
 function setupRoleHUD(){
   const rp=document.getElementById('grolepill');
   rp.className=G.myRole;
@@ -468,22 +452,18 @@ function setupRoleHUD(){
   else rp.textContent='🔵 UNSCHULDIG';
   const s1=document.getElementById('gslot1'),s2=document.getElementById('gslot2');
   if(G.myRole==='murderer'){
-    // Mörder startet mit Schild — Messer noch gesperrt
     s1.classList.add('off');document.getElementById('gs1i').textContent='🗡️';
     s2.classList.remove('off');document.getElementById('gs2i').textContent='🛡️';
-    // Auto-equip shield and start 60s timer
     setTimeout(()=>{selSlot(2);},300);
     startShieldTimer();
   } else if(G.myRole==='sheriff'){
-    // Wurde Sheriff durch Schild aufheben
     s1.classList.remove('off');document.getElementById('gs1i').textContent='🗡️';s2.classList.add('off');
   } else {
-    // Unschuldig — kein Item
     s1.classList.add('off');s2.classList.add('off');
     selSlot(0);
   }
 }
-
+ 
 let shieldTimerInterval=null;
 function startShieldTimer(){
   const timerEl=document.getElementById('gshieldtimer');
@@ -496,7 +476,6 @@ function startShieldTimer(){
     if(sec<=0){
       clearInterval(shieldTimerInterval);timerEl.style.display='none';
       if(!G.shDropped){
-        // auto-drop shield and lose it (flies off)
         notif('⚠️ Schild fliegt runter!',2000);
         fbDropShield(PP.x,PP.z);
         G.shDropped=true;
@@ -508,7 +487,7 @@ function startShieldTimer(){
     }
   },1000);
 }
-
+ 
 function selSlot(i){
   G.curSlot=i;
   document.querySelectorAll('.ghs').forEach((s,idx)=>s.classList.toggle('on',idx===i));
@@ -524,12 +503,11 @@ function selSlot(i){
     setHandItem(myChar.hand,'');fbSetKnife(0);
   }
 }
-
+ 
 async function useItem(){
   if(!G.alive||!G.running)return;
   if(G.myRole==='murderer'){
     if(!G.shDropped){
-      // Must have shield equipped (slot 2) to drop it
       if(G.curSlot!==2){notif('Slot 3 wählen (🛡️) um Schild zu droppen!',1500);return;}
       fbDropShield(PP.x,PP.z);
       G.shDropped=true;
@@ -541,7 +519,6 @@ async function useItem(){
       setHandItem(myChar.hand,'');fbSetKnife(0);
       notif('🛡️ Schild versteckt! Messer freigeschaltet — jetzt töten!',2500);
     } else {
-      // Shield dropped — can now use knife
       if(G.curSlot!==1){notif('Slot 2 wählen (🗡️) um zu töten!',1000);return;}
       const best=nearestAlive(2.6);
       if(best){flashRed();notif('🔪 '+best,1500);fbKill(best);}
@@ -557,7 +534,6 @@ async function useItem(){
       }
     }
   } else {
-    // innocent — can pick up shield to become sheriff
     if(shieldDropMesh&&!G.hasShield){
       const dx=PP.x-shieldDropPos.x,dz=PP.z-shieldDropPos.z;
       if(Math.sqrt(dx*dx+dz*dz)<2.5){
@@ -573,7 +549,7 @@ async function useItem(){
     }
   }
 }
-
+ 
 function nearestAlive(maxD){
   let best=null,bd=maxD;
   Object.entries(others).forEach(([name,ot])=>{
@@ -585,7 +561,7 @@ function nearestAlive(maxD){
   });
   return best;
 }
-
+ 
 function showDead(msg){
   document.getElementById('gdead').style.display='flex';
   document.getElementById('gspecbar').style.display='block';
@@ -598,7 +574,7 @@ function updSpec(){
   const k=Object.keys(others).filter(n=>others[n].alive);
   document.getElementById('gspecname').textContent=k.length?k[((G.specIdx%k.length)+k.length)%k.length]:'Niemand';
 }
-
+ 
 function startWorld(lobby){
   Object.values(others).forEach(o=>scene.remove(o.g));
   Object.keys(others).forEach(k=>delete others[k]);
@@ -643,7 +619,7 @@ function startWorld(lobby){
   }
   if(!isTouch)setTimeout(()=>document.getElementById('c3d').requestPointerLock(),200);
 }
-
+ 
 function setupInput(){
   document.addEventListener('keydown',e=>{
     KEYS[e.code]=true;if(!G.running)return;
@@ -692,7 +668,7 @@ function setupInput(){
   document.getElementById('gspec-prev').addEventListener('click',()=>{G.specIdx--;updSpec();});
   document.getElementById('gspec-next').addEventListener('click',()=>{G.specIdx++;updSpec();});
 }
-
+ 
 function gameLoop(){
   requestAnimationFrame(gameLoop);
   if(!renderer||!G.running){if(renderer)renderer.render(scene,camera);return;}
@@ -733,7 +709,7 @@ function gameLoop(){
   if(shieldDropMesh)shieldDropMesh.rotation.y+=dt*0.3;
   tickOthers(dt);renderer.render(scene,camera);
 }
-
+ 
 function tickOthers(dt){
   Object.values(others).forEach(ot=>{
     if(!ot.alive)return;
@@ -742,39 +718,26 @@ function tickOthers(dt){
     if(ot.lR)ot.lR.rotation.x=-Math.sin(ot.wt)*.3;
     const dx=PP.x-ot.g.position.x,dz=PP.z-ot.g.position.z;
     const dist=Math.sqrt(dx*dx+dz*dz);
-    // Moving check — if far enough, hide name (simulates running away)
     const isMoving=ot.lastPos&&(Math.abs(ot.g.position.x-ot.lastPos.x)>0.05||Math.abs(ot.g.position.z-ot.lastPos.z)>0.05);
     ot.lastPos={x:ot.g.position.x,z:ot.g.position.z};
-    // Name only visible within 8m AND not moving fast away
     const tgt=dist<8&&!isMoving?Math.min(1,(8-dist)/3):0;
     if(ot.label)ot.label.material.opacity+=(tgt-ot.label.material.opacity)*.15;
-    // Sheriff tag visible within 15m
     const sheriffTgt=ot.hasSheriff&&dist<15?1:0;
     if(ot.tag)ot.tag.material.opacity+=(sheriffTgt-ot.tag.material.opacity)*.15;
   });
 }
-
-// FB HELPERS
-const lRef=c=>ref(db,'mm3d3v2/'+c);
-const getL=async c=>{const s=await get(lRef(c));return s.exists()?s.val():null;};
-const saveL=(c,d)=>set(lRef(c),d);
-const updL=(c,d)=>update(lRef(c),d);
-const delL=c=>remove(lRef(c));
-let unsub=null;
-function watchL(code,cb){if(unsub)unsub();unsub=onValue(lRef(code),s=>{if(s.exists())cb(s.val());});}
-function mkCode(){return String(Math.floor(1000+Math.random()*9000));}
-
+ 
 // ── FIREBASE ACTIONS ──
 async function fbKillMurderer(name){
   const l=await getL(G.code);if(!l)return;
   const ti=l.players.findIndex(p=>p.name===name);if(ti<0)return;
-  await updL(G.code,{[\`players/\${ti}/elim\`]:1,phase:'ended',winner:'innocents'});
+  await updL(G.code,{[`players/${ti}/elim`]:1,phase:'ended',winner:'innocents'});
 }
 async function fbKill(name){
   const l=await getL(G.code);if(!l)return;
   const ti=l.players.findIndex(p=>p.name===name);if(ti<0)return;
   const victim=l.players[ti];if(!victim||victim.elim)return;
-  const updates={[\`players/\${ti}/elim\`]:1};
+  const updates={[`players/${ti}/elim`]:1};
   if(victim.isSheriff&&victim.pos){updates['shield']={dropped:true,fromDeath:true,x:victim.pos.x||0,z:victim.pos.z||0};}
   await updL(G.code,updates);
   const l2=await getL(G.code);
@@ -783,21 +746,21 @@ async function fbKill(name){
 }
 async function fbSetKnife(val){
   if(G.myIdx<0)return;
-  await updL(G.code,{[\`players/\${G.myIdx}/knifeOut\`]:val||0});
+  await updL(G.code,{[`players/${G.myIdx}/knifeOut`]:val||0});
 }
 async function fbDropShield(x,z){
   await updL(G.code,{shield:{dropped:true,x,z}});
-  if(G.myIdx>=0)await updL(G.code,{[\`players/\${G.myIdx}/shieldDropped\`]:1});
+  if(G.myIdx>=0)await updL(G.code,{[`players/${G.myIdx}/shieldDropped`]:1});
 }
 async function fbPickShield(){
   await updL(G.code,{shield:{dropped:false,x:0,z:0}});
-  if(G.myIdx>=0)await updL(G.code,{[\`players/\${G.myIdx}/safe\`]:1,[\`players/\${G.myIdx}/isSheriff\`]:1});
+  if(G.myIdx>=0)await updL(G.code,{[`players/${G.myIdx}/safe`]:1,[`players/${G.myIdx}/isSheriff`]:1});
 }
-
+ 
 // ── UI EVENTS ──
 const AV=['🎩','🕵️','👑','🦹','🧙','🥀','⚔️','🌹','🎭','🦇','🌙','🔮'];
 let kickTarget=null;
-
+ 
 document.getElementById('gbtn-host').addEventListener('click',()=>ggo('gs-host'));
 document.getElementById('gbtn-join').addEventListener('click',()=>ggo('gs-join'));
 document.getElementById('gbtn-back-host').addEventListener('click',()=>ggo('gs-title'));
@@ -807,11 +770,10 @@ document.getElementById('gescbtn').addEventListener('click',()=>leaveGame());
 document.getElementById('gdeadleave').addEventListener('click',()=>leaveGame());
 document.getElementById('gkick-confirm-btn').addEventListener('click',()=>confirmKick());
 document.getElementById('gkick-cancel-btn').addEventListener('click',()=>{document.getElementById('gkick-dialog').style.display='none';});
-// slot hotbar clicks
 document.getElementById('gslot0').addEventListener('click',()=>selSlot(0));
 document.getElementById('gslot1').addEventListener('click',()=>{if(!document.getElementById('gslot1').classList.contains('off'))selSlot(1);});
 document.getElementById('gslot2').addEventListener('click',()=>{if(!document.getElementById('gslot2').classList.contains('off'))selSlot(2);});
-
+ 
 function showKick(name){
   if(!G.isHost||name===G.name)return;
   kickTarget=name;
@@ -826,7 +788,8 @@ async function confirmKick(){
   l.kicked.push(kickTarget);l.players=l.players.filter(p=>p.name!==kickTarget);
   await saveL(G.code,l);kickTarget=null;
 }
-
+window._showKick=showKick;
+ 
 document.getElementById('gbtn-create').addEventListener('click',async()=>{
   const name=document.getElementById('ghost-name').value.trim();
   if(!name){gtoast('Name eingeben!');return;}
@@ -845,18 +808,16 @@ document.getElementById('gbtn-create').addEventListener('click',async()=>{
     prevNames=curNames;
     document.getElementById('ghcount').textContent=l.players.length+' Spieler';
     document.getElementById('ghplist').innerHTML=l.players.map((p,i)=>
-      \`<li class="gpitem" onclick="window._showKick&&window._showKick('\${p.name}')" style="cursor:\${G.isHost&&i>0?'pointer':'default'}">
-        <div class="gpdot \${i===0?'gold':''}"></div>
-        <span class="gpname">\${p.avatar} \${p.name}</span>
-        \${i===0?'<span class="gptag">HOST</span>':G.isHost?'<span class="gptag" style="color:var(--blood)">KICK</span>':''}
-      </li>\`
+      `<li class="gpitem" onclick="window._showKick&&window._showKick('${p.name}')" style="cursor:${G.isHost&&i>0?'pointer':'default'}">
+        <div class="gpdot ${i===0?'gold':''}"></div>
+        <span class="gpname">${p.avatar} ${p.name}</span>
+        ${i===0?'<span class="gptag">HOST</span>':G.isHost?'<span class="gptag" style="color:var(--blood)">KICK</span>':''}
+      </li>`
     ).join('');
     if(l.phase==='countdown'){if(unsub)unsub();startCD(l);}
   });
 });
-
-window._showKick=showKick;
-
+ 
 document.getElementById('gbtn-joinlobby').addEventListener('click',async()=>{
   const name=document.getElementById('gjoin-name').value.trim();
   const code=document.getElementById('gjoin-code').value.trim();
@@ -877,37 +838,32 @@ document.getElementById('gbtn-joinlobby').addEventListener('click',async()=>{
     if(ll.kicked&&ll.kicked.includes(G.name)){gtoast('Du wurdest gekickt!');resetAll();return;}
     document.getElementById('gjcount').textContent=ll.players.length+' Spieler';
     document.getElementById('gjplist').innerHTML=ll.players.map(p=>
-      \`<li class="gpitem"><div class="gpdot \${p.isHost?'gold':''}"></div><span class="gpname">\${p.avatar} \${p.name}</span>\${p.isHost?'<span class="gptag">HOST</span>':''}</li>\`
+      `<li class="gpitem"><div class="gpdot ${p.isHost?'gold':''}"></div><span class="gpname">${p.avatar} ${p.name}</span>${p.isHost?'<span class="gptag">HOST</span>':''}</li>`
     ).join('');
     if(ll.phase==='countdown'){if(unsub)unsub();startCD(ll);}
   });
 });
-
+ 
 document.getElementById('gbtn-start').addEventListener('click',async()=>{
   const l=await getL(G.code);if(!l)return;
   if(l.players.length<3){gtoast('Min. 3 Spieler!');return;}
-  const roles={};
-  // Only ONE murderer — everyone else is innocent
   const murdererIdx=Math.floor(Math.random()*l.players.length);
-  l.players.forEach((p,i)=>{
-    p.role=i===murdererIdx?'murderer':'innocent';
-    roles[p.name]=p.role;
-  });
-  l.roles=roles;l.started=1;l.phase='countdown';
-  // Shield starts with murderer (not dropped yet)
+  l.players.forEach((p,i)=>{p.role=i===murdererIdx?'murderer':'innocent';});
+  l.roles={};l.players.forEach(p=>{l.roles[p.name]=p.role;});
+  l.started=1;l.phase='countdown';
   l.shield={dropped:false,x:0,z:0};
   await saveL(G.code,l);startCD(l);
 });
-
+ 
 document.getElementById('gbtn-leave-host').addEventListener('click',()=>resetAll());
 document.getElementById('gbtn-leave-join').addEventListener('click',()=>resetAll());
-
+ 
 function startCD(l){
   ggo('gs-countdown');let n=10;
   const el=document.getElementById('gcdn');el.textContent=n;el.classList.remove('red');
   const iv=setInterval(()=>{n--;el.textContent=n;if(n<=5)el.classList.add('red');if(n<=0){clearInterval(iv);G.myRole=l.roles[G.name]||'innocent';showRole(l);}},1000);
 }
-
+ 
 function showRole(l){
   const RD={
     murderer:{icon:'🗡️',label:'MÖRDER',desc:'Du trägst das Schild! Verstecke es irgendwo (Slot 3 wählen → E drücken) — innerhalb 60 Sekunden! Danach bekommst du dein Messer.'},
@@ -921,7 +877,7 @@ function showRole(l){
   let c=4;document.getElementById('gr-cd').textContent=c;
   const iv=setInterval(()=>{c--;document.getElementById('gr-cd').textContent=c;if(c<=0){clearInterval(iv);enterWorld(l);}},1000);
 }
-
+ 
 function enterWorld(l){
   window._roles=l.roles;
   G.myIdx=l.players.findIndex(p=>p.name===G.name);
@@ -932,11 +888,11 @@ function enterWorld(l){
       if(!G.running){clearInterval(posIv);return;}
       if(G.myIdx<0)return;
       await updL(G.code,{
-        [\`players/\${G.myIdx}/pos\`]:{x:Math.round(PP.x*10)/10,y:Math.round(PP.y*10)/10,z:Math.round(PP.z*10)/10},
-        [\`players/\${G.myIdx}/ry\`]:+G.yaw.toFixed(3)
+        [`players/${G.myIdx}/pos`]:{x:Math.round(PP.x*10)/10,y:Math.round(PP.y*10)/10,z:Math.round(PP.z*10)/10},
+        [`players/${G.myIdx}/ry`]:+G.yaw.toFixed(3)
       });
     },100);
-
+ 
     watchL(G.code,ll=>{
       if(!ll||!G.running)return;
       ll.players.forEach(p=>{
@@ -960,7 +916,7 @@ function enterWorld(l){
     });
   },150);
 }
-
+ 
 function killOther(name){const ot=others[name];if(ot)killChar(ot);}
 function updateOtherPos(name,x,y,z,ry){
   const ot=others[name];if(!ot)return;
@@ -996,7 +952,6 @@ function onShieldDrop(x,z,fromSheriffDeath){
   G.shDropped=true;shieldDropPos={x,z};
   if(!shieldDropMesh){shieldDropMesh=mkShieldDropMesh(!!fromSheriffDeath);}
   shieldDropMesh.position.set(x,.1,z);
-  // Only innocents get the hint — murderer already knows where it is
   if(G.myRole==='innocent'){
     notif('🛡️ Das Schild wurde irgendwo versteckt! Finde es und drücke E.',3500);
   }
@@ -1019,20 +974,20 @@ function gameOver(winner,mName){
   showOv(icon,title,sub);
   setTimeout(()=>resetAll(),8000);
 }
-
+ 
 async function leaveGame(){
   if(unsub)unsub();G.running=false;clearInterval(shieldTimerInterval);
   if(G.isHost){await delL(G.code);}
   else{
     const l=await getL(G.code);
     if(l){
-      if(G.myIdx>=0)await updL(G.code,{[\`players/\${G.myIdx}/elim\`]:1});
+      if(G.myIdx>=0)await updL(G.code,{[`players/${G.myIdx}/elim`]:1});
       setTimeout(async()=>{const l2=await getL(G.code);if(l2){l2.players=l2.players.filter(p=>p.name!==G.name);await saveL(G.code,l2);}},500);
     }
   }
   resetAll();
 }
-
+ 
 async function resetAll(){
   G.running=false;clearInterval(shieldTimerInterval);
   if(G.code&&!G.isHost){
@@ -1050,10 +1005,12 @@ async function resetAll(){
   G.code='';G.name='';G.isHost=false;
   ggo('gs-title');
 }
-
-// init
+ 
+// ── INIT ──
+function mkCode(){return String(Math.floor(1000+Math.random()*9000));}
 document.getElementById('gconn').classList.add('hide');
 document.getElementById('gnew-code').textContent=mkCode();
 ggo('gs-title');
-`;
-}
+</script>
+</body>
+</html>
