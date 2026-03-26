@@ -110,9 +110,9 @@ input[type=text]::placeholder{color:var(--gmuted);}
 </style>
 </head>
 <body>
- 
+
 <div class="gconn" id="gconn"><div class="gspinner"></div><div class="gconn-txt">VERBINDE…</div></div>
- 
+
 <div id="gkick-dialog">
   <div style="background:var(--gcard);border:1px solid var(--gold);padding:2rem;text-align:center;max-width:280px;width:90%;">
     <div style="font-family:'Cinzel',serif;font-size:.95rem;color:var(--gold);margin-bottom:.8rem;">Spieler kicken?</div>
@@ -123,7 +123,7 @@ input[type=text]::placeholder{color:var(--gmuted);}
     </div>
   </div>
 </div>
- 
+
 <div id="gs-title" class="gscreen">
   <span class="gblade">🗡️</span>
   <div><h1>MURDER<br><em>MYSTERY</em></h1><p class="gtagline">Ein Mörder unter Euch</p></div>
@@ -133,7 +133,7 @@ input[type=text]::placeholder{color:var(--gmuted);}
     <button class="gbtn" id="gbtn-join">🚪 Mit Code beitreten</button>
   </div>
 </div>
- 
+
 <div id="gs-host" class="gscreen">
   <div class="gpanel">
     <h2>🔑 Spiel erstellen</h2>
@@ -143,7 +143,7 @@ input[type=text]::placeholder{color:var(--gmuted);}
     <button class="glink-btn" id="gbtn-back-host">← Zurück</button>
   </div>
 </div>
- 
+
 <div id="gs-join" class="gscreen">
   <div class="gpanel">
     <h2>🚪 Beitreten</h2>
@@ -153,7 +153,7 @@ input[type=text]::placeholder{color:var(--gmuted);}
     <button class="glink-btn" id="gbtn-back-join">← Zurück</button>
   </div>
 </div>
- 
+
 <div id="gs-lobby" class="gscreen">
   <div class="globby-wrap">
     <div class="globby-top"><h2>⚔️ Lobby</h2><span class="gpcount" id="ghcount">1 Spieler</span></div>
@@ -164,7 +164,7 @@ input[type=text]::placeholder{color:var(--gmuted);}
     <button class="glink-btn" id="gbtn-leave-host">← Verlassen</button>
   </div>
 </div>
- 
+
 <div id="gs-join-lobby" class="gscreen">
   <div class="globby-wrap">
     <div class="globby-top"><h2>⏳ Lobby</h2><span class="gpcount" id="gjcount">—</span></div>
@@ -174,12 +174,12 @@ input[type=text]::placeholder{color:var(--gmuted);}
     <button class="glink-btn" id="gbtn-leave-join">← Verlassen</button>
   </div>
 </div>
- 
+
 <div id="gs-countdown" class="gscreen">
   <div id="gcdn">10</div>
   <div id="gcdsub">Spiel beginnt…</div>
 </div>
- 
+
 <div id="gs-role" class="gscreen">
   <div class="grc">
     <span class="gri" id="gr-icon">🗡️</span>
@@ -189,16 +189,16 @@ input[type=text]::placeholder{color:var(--gmuted);}
   <div class="grh">Nur du siehst das</div>
   <div class="grh2">Welt in <span id="gr-cd">3</span>s…</div>
 </div>
- 
+
 <div class="goverlay hide" id="goverlay">
   <div class="gov-icon" id="gov-icon">⚰️</div>
   <div class="gov-title" id="gov-title">—</div>
   <div class="gov-sub" id="gov-sub">—</div>
   <button class="gbtn gbtn-red" id="gbtn-mainmenu">🏠 Hauptmenü</button>
 </div>
- 
+
 <canvas id="c3d"></canvas>
- 
+
 <div id="ghud">
   <div id="gxhair"></div>
   <div id="grolepill" class="innocent">—</div>
@@ -215,7 +215,7 @@ input[type=text]::placeholder{color:var(--gmuted);}
   <div id="gctrl">WASD · Leertaste Springen · 1/2/3 Item · Klick/E Benutzen</div>
   <button id="gescbtn">☰ Verlassen</button>
 </div>
- 
+
 <div id="gdead">
   <h2>☠️ Tot</h2>
   <p id="gdeadmsg">Du wurdest ermordet.</p>
@@ -228,29 +228,28 @@ input[type=text]::placeholder{color:var(--gmuted);}
 <div id="gspecbar">Spectating: <span id="gspecname">—</span></div>
 <div id="gflash"></div>
 <div id="gnotif"></div>
- 
+
 <!-- THREE.JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
- 
-<!-- FIREBASE (module) -->
-<script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import{getDatabase,ref,get,set,update,remove,onValue,off}from"https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-const FB={apiKey:"AIzaSyAtLemnwT80X4DbEEVUQzOCezGcPFjxHzs",authDomain:"murdermysery-8bbe3.firebaseapp.com",databaseURL:"https://murdermysery-8bbe3-default-rtdb.firebaseio.com",projectId:"murdermysery-8bbe3",storageBucket:"murdermysery-8bbe3.firebasestorage.app",messagingSenderId:"74585023201",appId:"1:74585023201:web:c691c0919a1db66a52cda0"};
-const app=initializeApp(FB);
-const db=getDatabase(app);
-window._fbdb=db;window._fbref=ref;window._fbget=get;window._fbset=set;window._fbupdate=update;window._fbremove=remove;window._fbonValue=onValue;window._fboff=off;
-window._fbReady=true;document.dispatchEvent(new Event('fbready'));
-</script>
+
+<!-- FIREBASE (compat / global) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
-const lRef=c=>window._fbref(window._fbdb,'mm3d3v2/'+c);
-const getL=c=>window._fbget(lRef(c)).then(s=>s.exists()?s.val():null);
-const saveL=(c,d)=>window._fbset(lRef(c),d);
-const updL=(c,d)=>window._fbupdate(lRef(c),d);
-const delL=c=>window._fbremove(lRef(c));
+// ── Firebase init ──
+const FB={apiKey:"AIzaSyAtLemnwT80X4DbEEVUQzOCezGcPFjxHzs",authDomain:"murdermysery-8bbe3.firebaseapp.com",databaseURL:"https://murdermysery-8bbe3-default-rtdb.firebaseio.com",projectId:"murdermysery-8bbe3",storageBucket:"murdermysery-8bbe3.firebasestorage.app",messagingSenderId:"74585023201",appId:"1:74585023201:web:c691c0919a1db66a52cda0"};
+firebase.initializeApp(FB);
+const db=firebase.database();
+
+const lRef=c=>db.ref('mm3d3v2/'+c);
+const getL=c=>lRef(c).once('value').then(s=>s.exists()?s.val():null);
+const saveL=(c,d)=>lRef(c).set(d);
+const updL=(c,d)=>lRef(c).update(d);
+const delL=c=>lRef(c).remove();
 let unsub=null;
-function watchL(code,cb){if(unsub)unsub();const r=lRef(code);window._fbonValue(r,s=>{if(s.exists())cb(s.val());});unsub=()=>window._fboff(r);}
- 
+function watchL(code,cb){if(unsub)unsub();const r=lRef(code);r.on('value',s=>{if(s.exists())cb(s.val());});unsub=()=>r.off('value');}
+
 /* ═══════════════════════════════════════
    GLOBAL STATE
 ═══════════════════════════════════════ */
@@ -264,14 +263,14 @@ const G={
 };
 const KEYS={};
 const PP=new THREE.Vector3(2,1.7,2);
- 
+
 /* ── util ── */
 const ggo=id=>{document.querySelectorAll('.gscreen').forEach(s=>s.classList.remove('active'));document.getElementById(id)?.classList.add('active');};
 const gtoast=m=>{const e=document.createElement('div');e.className='gtoast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3200);};
 const flashRed=()=>{const f=document.getElementById('gflash');f.style.display='block';setTimeout(()=>f.style.display='none',400);};
 const notif=(msg,dur)=>{const n=document.getElementById('gnotif');n.textContent=msg;n.style.display='block';clearTimeout(n._t);n._t=setTimeout(()=>n.style.display='none',dur||2000);};
 const showOv=(icon,title,sub)=>{document.getElementById('gov-icon').textContent=icon;document.getElementById('gov-title').textContent=title;document.getElementById('gov-sub').textContent=sub;document.getElementById('goverlay').classList.remove('hide');};
- 
+
 /* ═══════════════════════════════════════
    THREE.JS
 ═══════════════════════════════════════ */
@@ -282,7 +281,7 @@ const WALLS=[];
 let shieldDropMesh=null,shieldDropPos={x:0,z:0};
 let loopStarted=false,walkT=0;
 const _mv=new THREE.Vector3(),_cd=new THREE.Vector3(),_cr=new THREE.Vector3();
- 
+
 const GEO={
   body:new THREE.BoxGeometry(.48,.68,.24),head:new THREE.BoxGeometry(.36,.36,.36),
   eye:new THREE.BoxGeometry(.08,.06,.04),leg:new THREE.BoxGeometry(.2,.5,.2),
@@ -309,7 +308,7 @@ const MAT={
   hBk:lam(0x111111),
 };
 const SPAWNS=[[2,2],[9,6],[-9,-6],[13,-11],[-6,13],[18,1],[-16,8],[4,-20],[20,-5],[-20,5],[0,15],[0,-15],[12,12],[-12,-12],[15,-8],[-15,8]];
- 
+
 function initThree(){
   if(renderer)return;
   const canvas=document.getElementById('c3d');
@@ -322,10 +321,10 @@ function initThree(){
   buildMap();setupInput();
   if(!loopStarted){loopStarted=true;gameLoop();}
 }
- 
+
 function B(mat,w,h,d,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);scene.add(m);return m;}
 function C(mat,rt,rb,h,sg,x,y,z){const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,sg),mat);m.position.set(x,y,z);scene.add(m);return m;}
- 
+
 function buildMap(){
   B(MAT.sand,500,.2,500,0,0,0);
   [[-30,-20],[25,15],[-10,35],[40,-30],[-45,10],[15,-45]].forEach(([x,z])=>B(MAT.sand2,16,.07,12,x,.05,z));
@@ -359,7 +358,7 @@ function buildMap(){
   scene.add(new THREE.AmbientLight(0xffe0a0,2.2));
   const sun=new THREE.DirectionalLight(0xfff0c0,1.3);sun.position.set(30,60,10);scene.add(sun);
 }
- 
+
 function mkChar(idx){
   const g=new THREE.Group();
   const bodySkin=new THREE.MeshLambertMaterial({color:0xcc3333});
@@ -378,7 +377,7 @@ function mkChar(idx){
   scene.add(g);
   return{g,body,head,lL,lR,aL,aR,hand,sm:bodySkin};
 }
- 
+
 function setHandItem(hand,type){
   while(hand.children.length)hand.remove(hand.children[0]);
   if(fpHand){while(fpHand.children.length)fpHand.remove(fpHand.children[0]);}
@@ -392,7 +391,7 @@ function setHandItem(hand,type){
     if(fpHand){const fs=new THREE.Mesh(new THREE.BoxGeometry(.7,.8,.1),MAT.shield);fpHand.add(fs);const fb=new THREE.Mesh(new THREE.SphereGeometry(.1,6,6),MAT.shBoss);fpHand.add(fb);}
   }
 }
- 
+
 function mkLabel(name){
   const cv=document.createElement('canvas');cv.width=200;cv.height=48;
   const ctx=cv.getContext('2d');
@@ -402,7 +401,7 @@ function mkLabel(name){
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true,opacity:0}));
   sp.scale.set(2,.48,1);return sp;
 }
- 
+
 function mkTag(text,color){
   const cv=document.createElement('canvas');cv.width=160;cv.height=40;
   const ctx=cv.getContext('2d');
@@ -412,7 +411,7 @@ function mkTag(text,color){
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true,opacity:0}));
   sp.scale.set(1.6,.4,1);return sp;
 }
- 
+
 function mkShieldDropMesh(withCorpse){
   const g=new THREE.Group();
   if(withCorpse){
@@ -424,17 +423,18 @@ function mkShieldDropMesh(withCorpse){
   const bo=new THREE.Mesh(GEO.shBoss,MAT.shBoss);bo.position.set(0,.19,0);g.add(bo);
   scene.add(g);return g;
 }
- 
+
 function killChar(ot){
   ot.alive=false;
   ['body','head','aL','aR','lL','lR'].forEach(k=>{if(ot[k])ot[k].visible=false;});
   ot.g.children.filter(c=>c.isGroup).forEach(c=>c.visible=false);
   if(ot.corpse)ot.corpse.visible=true;if(ot.blood)ot.blood.visible=true;
   ot.g.rotation.z=Math.PI/2;
-  if(ot.label)ot.label.visible=false;if(ot.tag)ot.tag.visible=false;
+  if(ot.label)ot.label.visible=false;
+  if(ot.tag){ot.tag.visible=false;ot.tag.material.opacity=0;}
   ot.hasSheriff=false;
 }
- 
+
 function collide(p){
   p.x=Math.max(-95,Math.min(95,p.x));p.z=Math.max(-95,Math.min(95,p.z));
   for(const w of WALLS){
@@ -443,7 +443,7 @@ function collide(p){
     if(ox>0&&oz>0){if(ox<oz)p.x+=ox*Math.sign(dx||.001);else p.z+=oz*Math.sign(dz||.001);}
   }
 }
- 
+
 function setupRoleHUD(){
   const rp=document.getElementById('grolepill');
   rp.className=G.myRole;
@@ -454,7 +454,7 @@ function setupRoleHUD(){
   if(G.myRole==='murderer'){
     s1.classList.add('off');document.getElementById('gs1i').textContent='🗡️';
     s2.classList.remove('off');document.getElementById('gs2i').textContent='🛡️';
-    setTimeout(()=>{selSlot(2);},300);
+    setTimeout(()=>{selSlot(0);},300);
     startShieldTimer();
   } else if(G.myRole==='sheriff'){
     s1.classList.remove('off');document.getElementById('gs1i').textContent='🗡️';s2.classList.add('off');
@@ -463,7 +463,7 @@ function setupRoleHUD(){
     selSlot(0);
   }
 }
- 
+
 let shieldTimerInterval=null;
 function startShieldTimer(){
   const timerEl=document.getElementById('gshieldtimer');
@@ -481,13 +481,13 @@ function startShieldTimer(){
         G.shDropped=true;
         document.getElementById('gslot2').classList.add('off');
         document.getElementById('gslot1').classList.remove('off');
-        G.curSlot=0;document.querySelectorAll('.ghs').forEach((s,idx)=>s.classList.toggle('on',idx===0));
+        selSlot(0);
         if(myChar){setHandItem(myChar.hand,'');fbSetKnife(0);}
       }
     }
   },1000);
 }
- 
+
 function selSlot(i){
   G.curSlot=i;
   document.querySelectorAll('.ghs').forEach((s,idx)=>s.classList.toggle('on',idx===i));
@@ -503,7 +503,7 @@ function selSlot(i){
     setHandItem(myChar.hand,'');fbSetKnife(0);
   }
 }
- 
+
 async function useItem(){
   if(!G.alive||!G.running)return;
   if(G.myRole==='murderer'){
@@ -515,7 +515,7 @@ async function useItem(){
       document.getElementById('gshieldtimer').style.display='none';
       document.getElementById('gslot2').classList.add('off');
       document.getElementById('gslot1').classList.remove('off');
-      G.curSlot=0;document.querySelectorAll('.ghs').forEach((s,idx)=>s.classList.toggle('on',idx===0));
+      selSlot(0);
       setHandItem(myChar.hand,'');fbSetKnife(0);
       notif('🛡️ Schild versteckt! Messer freigeschaltet — jetzt töten!',2500);
     } else {
@@ -549,7 +549,7 @@ async function useItem(){
     }
   }
 }
- 
+
 function nearestAlive(maxD){
   let best=null,bd=maxD;
   Object.entries(others).forEach(([name,ot])=>{
@@ -561,7 +561,7 @@ function nearestAlive(maxD){
   });
   return best;
 }
- 
+
 function showDead(msg){
   document.getElementById('gdead').style.display='flex';
   document.getElementById('gspecbar').style.display='block';
@@ -574,7 +574,7 @@ function updSpec(){
   const k=Object.keys(others).filter(n=>others[n].alive);
   document.getElementById('gspecname').textContent=k.length?k[((G.specIdx%k.length)+k.length)%k.length]:'Niemand';
 }
- 
+
 function startWorld(lobby){
   Object.values(others).forEach(o=>scene.remove(o.g));
   Object.keys(others).forEach(k=>delete others[k]);
@@ -619,7 +619,7 @@ function startWorld(lobby){
   }
   if(!isTouch)setTimeout(()=>document.getElementById('c3d').requestPointerLock(),200);
 }
- 
+
 function setupInput(){
   document.addEventListener('keydown',e=>{
     KEYS[e.code]=true;if(!G.running)return;
@@ -668,7 +668,7 @@ function setupInput(){
   document.getElementById('gspec-prev').addEventListener('click',()=>{G.specIdx--;updSpec();});
   document.getElementById('gspec-next').addEventListener('click',()=>{G.specIdx++;updSpec();});
 }
- 
+
 function gameLoop(){
   requestAnimationFrame(gameLoop);
   if(!renderer||!G.running){if(renderer)renderer.render(scene,camera);return;}
@@ -709,7 +709,7 @@ function gameLoop(){
   if(shieldDropMesh)shieldDropMesh.rotation.y+=dt*0.3;
   tickOthers(dt);renderer.render(scene,camera);
 }
- 
+
 function tickOthers(dt){
   Object.values(others).forEach(ot=>{
     if(!ot.alive)return;
@@ -722,11 +722,11 @@ function tickOthers(dt){
     ot.lastPos={x:ot.g.position.x,z:ot.g.position.z};
     const tgt=dist<8&&!isMoving?Math.min(1,(8-dist)/3):0;
     if(ot.label)ot.label.material.opacity+=(tgt-ot.label.material.opacity)*.15;
-    const sheriffTgt=ot.hasSheriff&&dist<15?1:0;
+    const sheriffTgt=ot.hasSheriff&&ot.alive&&dist<15?1:0;
     if(ot.tag)ot.tag.material.opacity+=(sheriffTgt-ot.tag.material.opacity)*.15;
   });
 }
- 
+
 // ── FIREBASE ACTIONS ──
 async function fbKillMurderer(name){
   const l=await getL(G.code);if(!l)return;
@@ -756,11 +756,11 @@ async function fbPickShield(){
   await updL(G.code,{shield:{dropped:false,x:0,z:0}});
   if(G.myIdx>=0)await updL(G.code,{[`players/${G.myIdx}/safe`]:1,[`players/${G.myIdx}/isSheriff`]:1});
 }
- 
+
 // ── UI EVENTS ──
 const AV=['🎩','🕵️','👑','🦹','🧙','🥀','⚔️','🌹','🎭','🦇','🌙','🔮'];
 let kickTarget=null;
- 
+
 document.getElementById('gbtn-host').addEventListener('click',()=>ggo('gs-host'));
 document.getElementById('gbtn-join').addEventListener('click',()=>ggo('gs-join'));
 document.getElementById('gbtn-back-host').addEventListener('click',()=>ggo('gs-title'));
@@ -773,7 +773,7 @@ document.getElementById('gkick-cancel-btn').addEventListener('click',()=>{docume
 document.getElementById('gslot0').addEventListener('click',()=>selSlot(0));
 document.getElementById('gslot1').addEventListener('click',()=>{if(!document.getElementById('gslot1').classList.contains('off'))selSlot(1);});
 document.getElementById('gslot2').addEventListener('click',()=>{if(!document.getElementById('gslot2').classList.contains('off'))selSlot(2);});
- 
+
 function showKick(name){
   if(!G.isHost||name===G.name)return;
   kickTarget=name;
@@ -789,7 +789,7 @@ async function confirmKick(){
   await saveL(G.code,l);kickTarget=null;
 }
 window._showKick=showKick;
- 
+
 document.getElementById('gbtn-create').addEventListener('click',async()=>{
   const name=document.getElementById('ghost-name').value.trim();
   if(!name){gtoast('Name eingeben!');return;}
@@ -817,7 +817,7 @@ document.getElementById('gbtn-create').addEventListener('click',async()=>{
     if(l.phase==='countdown'){if(unsub)unsub();startCD(l);}
   });
 });
- 
+
 document.getElementById('gbtn-joinlobby').addEventListener('click',async()=>{
   const name=document.getElementById('gjoin-name').value.trim();
   const code=document.getElementById('gjoin-code').value.trim();
@@ -843,7 +843,7 @@ document.getElementById('gbtn-joinlobby').addEventListener('click',async()=>{
     if(ll.phase==='countdown'){if(unsub)unsub();startCD(ll);}
   });
 });
- 
+
 document.getElementById('gbtn-start').addEventListener('click',async()=>{
   const l=await getL(G.code);if(!l)return;
   if(l.players.length<3){gtoast('Min. 3 Spieler!');return;}
@@ -854,16 +854,16 @@ document.getElementById('gbtn-start').addEventListener('click',async()=>{
   l.shield={dropped:false,x:0,z:0};
   await saveL(G.code,l);startCD(l);
 });
- 
+
 document.getElementById('gbtn-leave-host').addEventListener('click',()=>resetAll());
 document.getElementById('gbtn-leave-join').addEventListener('click',()=>resetAll());
- 
+
 function startCD(l){
   ggo('gs-countdown');let n=10;
   const el=document.getElementById('gcdn');el.textContent=n;el.classList.remove('red');
   const iv=setInterval(()=>{n--;el.textContent=n;if(n<=5)el.classList.add('red');if(n<=0){clearInterval(iv);G.myRole=l.roles[G.name]||'innocent';showRole(l);}},1000);
 }
- 
+
 function showRole(l){
   const RD={
     murderer:{icon:'🗡️',label:'MÖRDER',desc:'Du trägst das Schild! Verstecke es irgendwo (Slot 3 wählen → E drücken) — innerhalb 60 Sekunden! Danach bekommst du dein Messer.'},
@@ -877,7 +877,7 @@ function showRole(l){
   let c=4;document.getElementById('gr-cd').textContent=c;
   const iv=setInterval(()=>{c--;document.getElementById('gr-cd').textContent=c;if(c<=0){clearInterval(iv);enterWorld(l);}},1000);
 }
- 
+
 function enterWorld(l){
   window._roles=l.roles;
   G.myIdx=l.players.findIndex(p=>p.name===G.name);
@@ -892,7 +892,7 @@ function enterWorld(l){
         [`players/${G.myIdx}/ry`]:+G.yaw.toFixed(3)
       });
     },100);
- 
+
     watchL(G.code,ll=>{
       if(!ll||!G.running)return;
       ll.players.forEach(p=>{
@@ -916,7 +916,7 @@ function enterWorld(l){
     });
   },150);
 }
- 
+
 function killOther(name){const ot=others[name];if(ot)killChar(ot);}
 function updateOtherPos(name,x,y,z,ry){
   const ot=others[name];if(!ot)return;
@@ -974,7 +974,7 @@ function gameOver(winner,mName){
   showOv(icon,title,sub);
   setTimeout(()=>resetAll(),8000);
 }
- 
+
 async function leaveGame(){
   if(unsub)unsub();G.running=false;clearInterval(shieldTimerInterval);
   if(G.isHost){await delL(G.code);}
@@ -987,7 +987,7 @@ async function leaveGame(){
   }
   resetAll();
 }
- 
+
 async function resetAll(){
   G.running=false;clearInterval(shieldTimerInterval);
   if(G.code&&!G.isHost){
@@ -1005,7 +1005,7 @@ async function resetAll(){
   G.code='';G.name='';G.isHost=false;
   ggo('gs-title');
 }
- 
+
 // ── INIT ──
 function mkCode(){return String(Math.floor(1000+Math.random()*9000));}
 document.getElementById('gconn').classList.add('hide');
