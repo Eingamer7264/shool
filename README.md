@@ -1,3 +1,5 @@
+[index (1).html](https://github.com/user-attachments/files/26419190/index.1.html)
+[index (1).html](https://github.com/user-attachments/files/26419190/index.1.html)
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -234,7 +236,6 @@ input[type=text]::placeholder{color:var(--muted);}
     <button class="sb" onclick="specNext()">[P] ▶</button>
   </div>
   <button class="sb" style="margin-top:10px;border-color:var(--blood);color:#ff6666;" onclick="leaveGame()">🚪 Verlassen</button>
-  <button class="sb" style="margin-top:10px;border-color:var(--blood);color:#ff6666;" onclick="leaveGame()">🚪 Verlassen</button>
 </div>
 <div id="specbar">Spectating: <span id="specname">—</span></div>
 <div id="flash"></div>
@@ -465,7 +466,7 @@ function setHandItem(hand,type){
 function mkLabel(name){
   const cv=document.createElement('canvas');cv.width=200;cv.height=48;
   const ctx=cv.getContext('2d');
-  ctx.fillStyle='rgba(0,0,0,.8)';ctx.beginPath();ctx.roundRect(2,2,196,44,7);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,.8)';ctx.beginPath();if(ctx.roundRect){ctx.roundRect(2,2,196,44,7);}else{ctx.rect(2,2,196,44);}ctx.fill();
   ctx.fillStyle='#ffe0a0';ctx.font='bold 22px Georgia,serif';
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(name,100,24);
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true,opacity:0}));
@@ -476,7 +477,7 @@ function mkLabel(name){
 function mkTag(text,color){
   const cv=document.createElement('canvas');cv.width=160;cv.height=40;
   const ctx=cv.getContext('2d');
-  ctx.fillStyle=color||'rgba(201,168,76,.85)';ctx.beginPath();ctx.roundRect(2,2,156,36,6);ctx.fill();
+  ctx.fillStyle=color||'rgba(201,168,76,.85)';ctx.beginPath();if(ctx.roundRect){ctx.roundRect(2,2,156,36,6);}else{ctx.rect(2,2,156,36);}ctx.fill();
   ctx.fillStyle='#000';ctx.font='bold 20px Georgia,serif';
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,80,20);
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true,opacity:0}));
@@ -754,18 +755,18 @@ function setupInput(){
   // MOBILE JOYSTICK
   const jzone=document.getElementById('jzone');
   const jknob=document.getElementById('jknob');
-  let jOrig={x:0,y:0},jDelta={x:0,y:0};
-  jzone.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];jOrig={x:t.clientX,y:t.clientY};jDelta={x:0,y:0};},{passive:false});
+  let jOrig={x:0,y:0};
+  window._jDelta={x:0,y:0};
+  jzone.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];jOrig={x:t.clientX,y:t.clientY};window._jDelta.x=0;window._jDelta.y=0;},{passive:false});
   jzone.addEventListener('touchmove',e=>{
     e.preventDefault();const t=e.touches[0];
     const dx=t.clientX-jOrig.x,dy=t.clientY-jOrig.y;
     const R=45,dist=Math.min(Math.sqrt(dx*dx+dy*dy),R),ang=Math.atan2(dy,dx);
-    jDelta={x:Math.cos(ang)*dist/R,y:Math.sin(ang)*dist/R};
-    jknob.style.left=(33+jDelta.x*33)+'px';jknob.style.top=(33+jDelta.y*33)+'px';
+    window._jDelta.x=Math.cos(ang)*dist/R;window._jDelta.y=Math.sin(ang)*dist/R;
+    jknob.style.left=(33+window._jDelta.x*33)+'px';jknob.style.top=(33+window._jDelta.y*33)+'px';
   },{passive:false});
-  const stopJ=()=>{jDelta={x:0,y:0};jknob.style.left='33px';jknob.style.top='33px';};
+  const stopJ=()=>{window._jDelta.x=0;window._jDelta.y=0;jknob.style.left='33px';jknob.style.top='33px';};
   jzone.addEventListener('touchend',stopJ);jzone.addEventListener('touchcancel',stopJ);
-  window._jDelta=jDelta;
 
   // LOOK ZONE
   const lzone=document.getElementById('lzone');
@@ -897,7 +898,7 @@ window.updateOtherTag=(name,type)=>{
     if(ot.tag){
       const cv=document.createElement('canvas');cv.width=180;cv.height=44;
       const ctx=cv.getContext('2d');
-      ctx.fillStyle='rgba(201,168,76,.95)';ctx.beginPath();ctx.roundRect(2,2,176,40,8);ctx.fill();
+      ctx.fillStyle='rgba(201,168,76,.95)';ctx.beginPath();if(ctx.roundRect){ctx.roundRect(2,2,176,40,8);}else{ctx.rect(2,2,176,40);}ctx.fill();
       ctx.fillStyle='#000';ctx.font='bold 22px Georgia,serif';
       ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('⭐ SHERIFF',90,22);
       ot.tag.material.map=new THREE.CanvasTexture(cv);ot.tag.material.needsUpdate=true;
