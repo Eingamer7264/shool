@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tipp-Spiel</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f0f;
+  --surface: #1a1a1a;
+  --surface2: #242424;
+  --border: #2e2e2e;
+  --text: #e8e8e8;
+  --muted: #666;
+  --dim: #333;
+  --easy: #4ade80;
+  --medium: #facc15;
+  --hard: #f87171;
+  --accent: #a78bfa;
+  --correct: #4ade80;
+  --wrong: #f87171;
+  --cursor: #a78bfa;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.app { width: 100%; max-width: 760px; }
+
+/* HEADER */
+.header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 2.5rem; }
+.logo { font-size: 28px; font-weight: 800; letter-spacing: -1px; color: var(--text); }
+.logo span { color: var(--accent); }
+.tagline { font-size: 13px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+/* LEVEL SELECTOR */
+.level-row { display: flex; gap: 10px; margin-bottom: 2rem; }
+.level-btn {
+  flex: 1; padding: 12px 0; border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer; font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.5px;
+  color: var(--muted); transition: all 0.15s;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.level-btn .lv-icon { font-size: 18px; }
+.level-btn:hover { border-color: var(--dim); color: var(--text); background: var(--surface2); }
+.level-btn.active.easy   { border-color: var(--easy);   color: var(--easy);   background: rgba(74,222,128,0.06); }
+.level-btn.active.medium { border-color: var(--medium); color: var(--medium); background: rgba(250,204,21,0.06); }
+.level-btn.active.hard   { border-color: var(--hard);   color: var(--hard);   background: rgba(248,113,113,0.06); }
+
+/* META BAR */
+.meta-bar {
+  display: flex; align-items: center; gap: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 0; margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+.meta-item { flex: 1; padding: 12px 16px; text-align: center; border-right: 1px solid var(--border); }
+.meta-item:last-child { border-right: none; }
+.meta-label { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 3px; letter-spacing: 0.5px; text-transform: uppercase; }
+.meta-val { font-size: 22px; font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; line-height: 1; }
+.meta-val.easy   { color: var(--easy); }
+.meta-val.medium { color: var(--medium); }
+.meta-val.hard   { color: var(--hard); }
+.meta-val.accent { color: var(--accent); }
+
+/* PROGRESS BAR */
+.progress-wrap { height: 3px; background: var(--surface2); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 2px; transition: width 0.1s linear; background: var(--accent); }
+
+/* TYPING AREA */
+.typing-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.75rem 2rem;
+  margin-bottom: 1.25rem; position: relative;
+  min-height: 110px;
+}
+.sentence-display {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px; line-height: 1.7;
+  user-select: none; letter-spacing: 0.3px;
+  word-break: break-word;
+}
+.char { color: var(--dim); transition: color 0.05s; }
+.char.correct { color: var(--correct); }
+.char.wrong { color: var(--wrong); text-decoration: underline; text-decoration-color: var(--wrong); }
+.char.cursor { border-left: 2px solid var(--cursor); margin-left: -2px; animation: blink 1s step-end infinite; }
+.char.cursor.wrong { border-left-color: var(--wrong); }
+@keyframes blink { 0%,100% { border-color: var(--cursor); } 50% { border-color: transparent; } }
+
+/* hidden real input */
+#real-input {
+  position: absolute; opacity: 0; pointer-events: none;
+  top: 0; left: 0; width: 1px; height: 1px;
+}
+
+/* CLICK TO START overlay */
+.start-overlay {
+  position: absolute; inset: 0; border-radius: 12px;
+  background: rgba(15,15,15,0.7);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.start-overlay.hidden { opacity: 0; pointer-events: none; }
+.start-hint { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); letter-spacing: 1px; }
+
+/* SENTENCE COUNTER */
+.sentence-counter {
+  display: flex; gap: 6px; margin-bottom: 1.5rem; flex-wrap: wrap;
+}
+.sc-dot {
+  width: 28px; height: 6px; border-radius: 3px;
+  background: var(--surface2); border: 1px solid var(--border);
+  transition: background 0.2s;
+}
+.sc-dot.done { background: var(--correct); border-color: var(--correct); }
+.sc-dot.active { background: var(--accent); border-color: var(--accent); }
+
+/* BOTTOM BAR */
+.bottom-bar { display: flex; align-items: center; gap: 10px; }
+.hint-text { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); flex: 1; }
+.btn-restart {
+  padding: 9px 20px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--muted); font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: all 0.15s; letter-spacing: 0.3px;
+}
+.btn-restart:hover { border-color: var(--accent); color: var(--accent); background: rgba(167,139,250,0.06); }
+
+/* RESULT SCREEN */
+.result-screen {
+  text-align: center; padding: 2rem 1rem;
+  display: none;
+}
+.result-screen.show { display: block; }
+.result-big { font-size: 56px; font-weight: 800; letter-spacing: -2px; margin-bottom: 6px; }
+.result-big.easy   { color: var(--easy); }
+.result-big.medium { color: var(--medium); }
+.result-big.hard   { color: var(--hard); }
+.result-sub { font-size: 14px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 2rem; }
+.result-stats { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; }
+.rs { text-align: center; }
+.rs-val { font-size: 28px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+.rs-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.btn-play-again {
+  padding: 12px 32px; border-radius: 10px;
+  border: 1px solid var(--accent); background: rgba(167,139,250,0.1);
+  color: var(--accent); font-family: 'Syne', sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-play-again:hover { background: rgba(167,139,250,0.2); }
+
+.main-area { display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="logo">tipp<span>.</span></div>
+    <div class="tagline">// schreib schnell. schreib richtig.</div>
+  </div>
+
+  <div class="level-row">
+    <button class="level-btn easy active" onclick="setLevel('easy')">
+      <span class="lv-icon">🟢</span>Einfach
+    </button>
+    <button class="level-btn medium" onclick="setLevel('medium')">
+      <span class="lv-icon">🟡</span>Mittel
+    </button>
+    <button class="level-btn hard" onclick="setLevel('hard')">
+      <span class="lv-icon">🔴</span>Schwer
+    </button>
+  </div>
+
+  <div class="main-area" id="main-area">
+    <div class="meta-bar">
+      <div class="meta-item">
+        <div class="meta-label">Zeit</div>
+        <div class="meta-val" id="time-val">60</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">WPM</div>
+        <div class="meta-val accent" id="wpm-val">—</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Genauigkeit</div>
+        <div class="meta-val" id="acc-val">—</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Sätze</div>
+        <div class="meta-val" id="sent-val">0</div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progress-fill" style="width:100%"></div>
+    </div>
+
+    <div class="sentence-counter" id="sent-counter"></div>
+
+    <div class="typing-box" id="typing-box" onclick="focusInput()">
+      <div class="sentence-display" id="sent-display"></div>
+      <input id="real-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <div class="start-overlay" id="start-overlay" onclick="focusInput()">
+        <span class="start-hint">— klicken zum starten —</span>
+      </div>
+    </div>
+
+    <div class="bottom-bar">
+      <div class="hint-text" id="hint-text">Klicke in das Feld um zu beginnen</div>
+      <button class="btn-restart" onclick="restart()">↺ Neu starten</button>
+    </div>
+  </div>
+
+  <div class="result-screen" id="result-screen">
+    <div class="result-big" id="result-wpm">—</div>
+    <div class="result-sub" id="result-label">WPM</div>
+    <div class="result-stats">
+      <div class="rs"><div class="rs-val" id="r-acc">—</div><div class="rs-label">Genauigkeit</div></div>
+      <div class="rs"><div class="rs-val" id="r-sents">—</div><div class="rs-label">Sätze</div></div>
+      <div class="rs"><div class="rs-val" id="r-chars">—</div><div class="rs-label">Zeichen</div></div>
+    </div>
+    <button class="btn-play-again" onclick="restart()">Nochmal spielen</button>
+  </div>
+
+</div>
+
+<script>
+const SENTENCES = {
+  easy: [
+    "die katze liegt im garten",
+    "heute scheint die sonne schön",
+    "das buch liegt auf dem tisch",
+    "wir gehen heute einkaufen",
+    "der hund spielt im park",
+    "ich trinke jeden morgen kaffee",
+    "das wetter ist heute sehr schön",
+    "sie liest gerne bücher abends",
+    "der zug kommt gleich an",
+    "wir essen zusammen zu abend",
+    "das kind spielt draußen im hof",
+    "er kommt morgen nach hause",
+    "der wald ist heute sehr ruhig",
+    "ich lerne jeden tag etwas neues",
+    "sie kocht heute abend nudeln",
+    "das fahrrad steht vor der tür",
+    "wir schauen abends einen film",
+    "der brief kommt morgen an",
+    "die blumen blühen im frühling",
+    "ich gehe jeden abend spazieren",
+  ],
+  medium: [
+    "Der Zug fährt um 8 Uhr ab, also müssen wir uns beeilen.",
+    "Heute Abend koche ich Pasta mit frischen Tomaten und Basilikum.",
+    "Das Konzert beginnt um 20 Uhr, die Karten liegen auf dem Tisch.",
+    "Sie hat das Buch in drei Tagen gelesen, weil es so spannend war.",
+    "Der neue Kollege kommt aus München und spricht sehr gut Englisch.",
+    "Wir treffen uns am Freitag um 18 Uhr vor dem Kino in der Mitte.",
+    "Das Wetter war gestern schlecht, aber heute scheint wieder die Sonne.",
+    "Er hat das Projekt rechtzeitig abgegeben und alle waren begeistert.",
+    "Die Kinder spielen im Garten, während die Eltern Kaffee trinken.",
+    "Sie hat ihren Schlüssel verloren und musste beim Nachbarn klingeln.",
+    "Das Restaurant war voll besetzt, deshalb mussten wir lange warten.",
+    "Ich habe heute Morgen vergessen, mein Handy aufzuladen.",
+    "Der Film war lang, aber die Geschichte war wirklich sehr bewegend.",
+    "Wir fahren nächste Woche in den Urlaub ans Meer nach Italien.",
+    "Das Paket ist endlich angekommen, aber der Inhalt war leider kaputt.",
+  ],
+  hard: [
+    "Er überlegte lange, bevor er die Entscheidung traf; schließlich rief er sie an.",
+    "Das Ergebnis war überraschend: trotz intensiver Vorbereitung, scheiterte das Team knapp.",
+    "Sie fragte sich, ob es wirklich sinnvoll war, das Projekt neu zu starten.",
+    "Die Konferenz begann pünktlich um 9:30 Uhr – alle Teilnehmer waren bereits anwesend.",
+    "Er schrieb den Brief zweimal um, weil der erste Entwurf zu direkt klang.",
+    "Das System versagte genau dann, als sie es am dringendsten brauchten; typisch.",
+    "Trotz des Regens, der eisigen Kälte und des starken Windes lief sie weiter.",
+    "Die Analyse zeigte: je komplexer die Aufgabe, desto höher die Fehlerquote.",
+    "Sie hatte keine Wahl – entweder sie akzeptierte das Angebot, oder sie verlor alles.",
+    "Das Projekt war ambitioniert, zeitaufwendig und teuer, aber letztlich ein voller Erfolg.",
+    "Er tippte schnell, machte kaum Fehler und beendete die Aufgabe in Rekordzeit.",
+    "Die Deadline rückte näher; trotzdem blieb er ruhig und arbeitete methodisch weiter.",
+    "Niemand hatte erwartet, dass das kleine Startup die Branche so grundlegend verändern würde.",
+    "Sie korrigierte jeden Satz dreimal: Genauigkeit war ihr wichtiger als Geschwindigkeit.",
+    "Das war kein einfacher Weg – aber am Ende hatte sich jede Mühe gelohnt.",
+  ]
+};
+
+const TIME_LIMIT = { easy: 60, medium: 60, hard: 90 };
+const HINTS = {
+  easy: 'kleinbuchstaben · keine satzzeichen · einfache wörter',
+  medium: 'groß/kleinschreibung · punkte · kommas · normal tippen',
+  hard: 'alles: doppelpunkt · semikolon · gedankenstrich · präzision zählt'
+};
+
+let level = 'easy';
+let sentences = [];
+let sentIdx = 0;
+let typed = '';
+let started = false;
+let finished = false;
+let timeLeft = 60;
+let timerInterval = null;
+let totalCorrect = 0;
+let totalWrong = 0;
+let totalChars = 0;
+let completedSents = 0;
+const TOTAL_SENTS = 8;
+
+function setLevel(l) {
+  level = l;
+  document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.level-btn.' + l).classList.add('active');
+  restart();
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function restart() {
+  clearInterval(timerInterval);
+  sentences = shuffle(SENTENCES[level]).slice(0, TOTAL_SENTS);
+  sentIdx = 0;
+  typed = '';
+  started = false;
+  finished = false;
+  timeLeft = TIME_LIMIT[level];
+  totalCorrect = 0;
+  totalWrong = 0;
+  totalChars = 0;
+  completedSents = 0;
+
+  document.getElementById('result-screen').classList.remove('show');
+  document.getElementById('main-area').style.display = 'block';
+  document.getElementById('start-overlay').classList.remove('hidden');
+  document.getElementById('real-input').value = '';
+  document.getElementById('hint-text').textContent = HINTS[level];
+  updateTimerDisplay();
+  updateWPM();
+  renderDots();
+  renderSentence();
+}
+
+function focusInput() {
+  document.getElementById('real-input').focus();
+  document.getElementById('start-overlay').classList.add('hidden');
+  if (!started && !finished) {
+    startTimer();
+  }
+}
+
+function startTimer() {
+  started = true;
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    updateProgress();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      showResult();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('time-val');
+  el.textContent = timeLeft;
+  el.className = 'meta-val' + (timeLeft <= 10 ? ' hard' : timeLeft <= 20 ? ' medium' : '');
+}
+
+function updateProgress() {
+  const pct = (timeLeft / TIME_LIMIT[level]) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-fill').style.background =
+    pct > 50 ? 'var(--accent)' : pct > 20 ? 'var(--medium)' : 'var(--hard)';
+}
+
+function updateWPM() {
+  const elapsed = (TIME_LIMIT[level] - timeLeft) / 60;
+  if (elapsed > 0 && totalChars > 0) {
+    const wpm = Math.round((totalChars / 5) / elapsed);
+    document.getElementById('wpm-val').textContent = wpm;
+  } else {
+    document.getElementById('wpm-val').textContent = '—';
+  }
+  const total = totalCorrect + totalWrong;
+  const acc = total > 0 ? Math.round((totalCorrect / total) * 100) : '—';
+  document.getElementById('acc-val').textContent = total > 0 ? acc + '%' : '—';
+  document.getElementById('sent-val').textContent = completedSents;
+}
+
+function renderDots() {
+  const c = document.getElementById('sent-counter');
+  c.innerHTML = '';
+  for (let i = 0; i < TOTAL_SENTS; i++) {
+    const d = document.createElement('div');
+    d.className = 'sc-dot' + (i < completedSents ? ' done' : i === sentIdx ? ' active' : '');
+    c.appendChild(d);
+  }
+}
+
+function renderSentence() {
+  const target = sentences[sentIdx] || '';
+  const display = document.getElementById('sent-display');
+  display.innerHTML = '';
+  for (let i = 0; i < target.length; i++) {
+    const span = document.createElement('span');
+    span.className = 'char';
+    if (i < typed.length) {
+      span.classList.add(typed[i] === target[i] ? 'correct' : 'wrong');
+    }
+    if (i === typed.length) {
+      span.classList.add('cursor');
+      if (typed.length > 0 && typed[typed.length - 1] !== target[typed.length - 1]) {
+        span.classList.add('wrong');
+      }
+    }
+    span.textContent = target[i] === ' ' ? '\u00A0' : target[i];
+    display.appendChild(span);
+  }
+  if (typed.length >= target.length && target.length > 0) {
+    const cursor = document.createElement('span');
+    cursor.className = 'char cursor';
+    cursor.textContent = '\u00A0';
+    display.appendChild(cursor);
+  }
+}
+
+document.getElementById('real-input').addEventListener('input', function(e) {
+  if (!started || finished) return;
+  const val = this.value;
+  const target = sentences[sentIdx] || '';
+  const prev = typed;
+  typed = val;
+
+  for (let i = prev.length; i < val.length; i++) {
+    if (val[i] === target[i]) totalCorrect++;
+    else totalWrong++;
+  }
+
+  if (val.length > prev.length) totalChars++;
+
+  if (val === target) {
+    completedSents++;
+    totalChars += target.length > 0 ? 0 : 0;
+    this.value = '';
+    typed = '';
+    sentIdx++;
+    updateWPM();
+    renderDots();
+    if (sentIdx >= TOTAL_SENTS) {
+      clearInterval(timerInterval);
+      showResult();
+      return;
+    }
+  }
+  renderSentence();
+  updateWPM();
+});
+
+document.getElementById('real-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Backspace') {
+    if (typed.length > 0) totalCorrect = Math.max(0, totalCorrect - 1);
+  }
+});
+
+function showResult() {
+  finished = true;
+  document.getElementById('main-area').style.display = 'none';
+  const rs = document.getElementById('result-screen');
+  rs.classList.add('show');
+
+  const elapsed = Math.max(1, TIME_LIMIT[level] - timeLeft) / 60;
+  const wpm = Math.round((totalChars / 5) / elapsed);
+  const total = totalCorrect + totalWrong;
+  const acc = total > 0 ? Math.round((totalCorrect / total) * 100) : 100;
+
+  document.getElementById('result-wpm').textContent = wpm;
+  document.getElementById('result-wpm').className = 'result-big ' + level;
+  document.getElementById('result-label').textContent =
+    'WPM · ' + (wpm >= 60 ? 'Blitzschnell! ⚡' : wpm >= 40 ? 'Sehr gut! 🔥' : wpm >= 25 ? 'Solide 👍' : 'Weiter üben 💪');
+  document.getElementById('r-acc').textContent = acc + '%';
+  document.getElementById('r-sents').textContent = completedSents + '/' + TOTAL_SENTS;
+  document.getElementById('r-chars').textContent = totalChars;
+}
+
+restart();
+</script>
+</body>
+</html>
